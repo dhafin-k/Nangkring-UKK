@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tarif_parkirs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('jenis_kendaraan')->constrained('jenis_kendaraans')->cascadeOnDelete();
+            $table->foreignId('jenis_kendaraan_id')->constrained('jenis_kendaraans')->cascadeOnDelete();
             $table->decimal('tarif_per_jam', 10, 0);
             $table->timestamps();
         });

@@ -23,22 +23,11 @@ import {
     MapPin,
     Package,
     Truck,
-    Bike
+    Bike,
+    Activity
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
 
 export function AppSidebar() {
     const { auth } = usePage().props as any;
@@ -69,9 +58,8 @@ export function AppSidebar() {
                     { title: 'Tarif Parkir', href: '/admin/tarif-parkir', icon: DollarSign },
                 ]
             },
+            { title: 'Log Aktivitas', href: '/admin/log-aktivitas', icon: Activity },
 
-            // { title: 'Kendaraan', href: '/admin/kendaraan', icon: Car },
-            // { title: 'Log Aktivitas', href: '/admin/log-aktivitas', icon: FileText },
         ];
     } else if (role === 'petugas') {
         mainNavItems = [
@@ -109,7 +97,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
