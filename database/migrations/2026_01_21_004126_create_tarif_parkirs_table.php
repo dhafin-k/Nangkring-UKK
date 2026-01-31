@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tarifs', function (Blueprint $table) {
+        Schema::create('tarif_parkirs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jenis_kendaraan')->constrained('jenis_kendaraans')->cascadeOnDelete();
             $table->decimal('tarif_per_jam', 10, 0);

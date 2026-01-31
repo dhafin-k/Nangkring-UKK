@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('kendaraan_id')->constrained('kendaraans')->cascadeOnDelete();
             $table->dateTime('waktu_masuk');
             $table->dateTime('waktu_keluar')->nullable();
-            $table->foreignId('tarif_id')->constrained('tarifs')->cascadeOnDelete();
+            $table->foreignId('tarif_parkir_id')->constrained('tarif_parkirs')->cascadeOnDelete();
             $table->integer('durasi_jam')->nullable();
             $table->decimal('biaya_total', 10, 0)->nullable();
             $table->enum('status', ['masuk', 'keluar'])->default('masuk');

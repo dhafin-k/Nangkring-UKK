@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('kendaraans', function (Blueprint $table) {
             $table->id();
-            $table->string('plat_nomor', 255);
+            $table->string('plat_nomor', 255)->unique();
             $table->string('warna', 100);
             $table->string('pemilik', 255);
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('jenis_kendaraan')->constrained('jenis_kendaraans')->cascadeOnDelete();
+            $table->foreignId('jenis_kendaraan_id')->constrained('jenis_kendaraans')->cascadeOnDelete();
             $table->timestamps();
         });
     }
