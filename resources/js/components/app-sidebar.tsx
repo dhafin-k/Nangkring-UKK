@@ -52,15 +52,6 @@ export function AppSidebar() {
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
             { title: 'Users Manage', href: '/admin/users', icon: Users },
             {
-                title: 'Data Parkir',
-                href: '#',
-                icon: Package,
-                items: [
-                    { title: 'Area Parkir', href: '/admin/area-parkir', icon: MapPin },
-                    { title: 'Tarif Parkir', href: '/admin/tarif-parkir', icon: DollarSign },
-                ]
-            },
-            {
                 title: 'Data Kendaraan',
                 href: '#',
                 icon: Truck,
@@ -69,6 +60,16 @@ export function AppSidebar() {
                     { title: 'Kendaraan', href: '/admin/kendaraan', icon: Car },
                 ]
             },
+            {
+                title: 'Data Parkir',
+                href: '#',
+                icon: Package,
+                items: [
+                    { title: 'Area Parkir', href: '/admin/area-parkir', icon: MapPin },
+                    { title: 'Tarif Parkir', href: '/admin/tarif-parkir', icon: DollarSign },
+                ]
+            },
+
             // { title: 'Kendaraan', href: '/admin/kendaraan', icon: Car },
             // { title: 'Log Aktivitas', href: '/admin/log-aktivitas', icon: FileText },
         ];

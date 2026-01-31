@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'admin' => redirect()->route('admin.dashboard'),
             'petugas' => redirect()->route('petugas.dashboard'),
             'owner' => redirect()->route('owner.dashboard'),
-            default => abort(403, 'Role tidak dikenali'),
+            default => abort(403, 'Role akun tidak dikenali'),
         };
     })->name('dashboard');
 
