@@ -66,7 +66,7 @@ export default function AreaParkirIndex({ areaParkir, filters, flash }: Props) {
     });
 
     useEffect(() => {
-        if (flash?.success) {
+        if (flash?.success) {   
             setToastMessage(flash.success);
             setToastType('success');
             setShowToast(true);
@@ -118,6 +118,12 @@ export default function AreaParkirIndex({ areaParkir, filters, flash }: Props) {
                 setIsCreateModalOpen(false);
                 resetCreate();
             },
+            onError: (err: any) => {
+                const msg = err?.message || 'Gagal menambahkan area parkir';
+                setToastMessage(msg);
+                setToastType('error');
+                setShowToast(true);
+            }
         });
     }
 
@@ -137,6 +143,12 @@ export default function AreaParkirIndex({ areaParkir, filters, flash }: Props) {
                 setIsEditModalOpen(false);
                 reset();
             },
+            onError: (err: any) => {
+                const msg = err?.message || 'Gagal memperbarui area parkir';
+                setToastMessage(msg);
+                setToastType('error');
+                setShowToast(true);
+            }
         });
     };
 
@@ -158,26 +170,40 @@ export default function AreaParkirIndex({ areaParkir, filters, flash }: Props) {
     };
 
     const getStatusBadge = (terisi: number, kapasitas: number) => {
-        const percentage = (terisi / kapasitas) * 100;
-        if (percentage >= 90) {
-            return 'bg-red-100 text-red-800';
-        } else if (percentage >= 70) {
-            return 'bg-orange-100 text-orange-800';
-        } else if (percentage >= 50) {
-            return 'bg-yellow-100 text-yellow-800';
+        const sisaSlot = kapasitas - terisi;
+
+        // Jika penuh (terisi >= kapasitas)
+        if (terisi >= kapasitas) {
+            return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
         }
-        return 'bg-green-100 text-green-800';
+        // Jika sisa slot <= 2 atau sisa slot <= 10% dari kapasitas
+        else if (sisaSlot <= 2 || sisaSlot <= kapasitas * 0.1) {
+            return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+        }
+        // Jika terisi > 0 (ada yang parkir)
+        else if (terisi > 0) {
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+        }
+        // Jika kosong (terisi = 0)
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
     };
 
     const getStatusText = (terisi: number, kapasitas: number) => {
-        const percentage = (terisi / kapasitas) * 100;
-        if (percentage >= 90) {
+        const sisaSlot = kapasitas - terisi;
+
+        // Jika penuh (terisi >= kapasitas)
+        if (terisi >= kapasitas) {
             return 'Penuh';
-        } else if (percentage >= 70) {
+        }
+        // Jika sisa slot <= 2 atau sisa slot <= 10% dari kapasitas
+        else if (sisaSlot <= 2 || sisaSlot <= kapasitas * 0.1) {
             return 'Hampir Penuh';
-        } else if (percentage >= 50) {
+        }
+        // Jika terisi > 0 (ada yang parkir)
+        else if (terisi > 0) {
             return 'Tersedia';
         }
+        // Jika kosong (terisi = 0)
         return 'Kosong';
     };
 
