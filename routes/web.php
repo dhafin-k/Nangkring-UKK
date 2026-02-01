@@ -6,6 +6,7 @@ use App\Http\Controllers\JenisKendaraanController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\LogAktivitasController;
 use App\Http\Controllers\TarifParkirController;
+use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -42,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ========== PETUGAS ROUTES ==========
     Route::middleware('role:petugas')->prefix('petugas')->name('petugas.')->group(function () {
         Route::get('/dashboard', fn() => Inertia::render('petugas/dashboard'))->name('dashboard');
+        Route::resource('transaksi', TransaksiController::class);
         // Route::get('/transaksi', fn() => Inertia::render('petugas/transaksi/disindex'))->name('transaksi.index');
         // Route::get('/transaksi/create', fn() => Inertia::render('petugas/transaksi/create'))->name('transaksi.create');
     });
