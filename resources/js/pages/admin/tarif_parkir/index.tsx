@@ -1,7 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, ChevronLeft, ChevronRight, MapPin, Save, DollarSign } from 'lucide-react';
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, MapPin, Save, DollarSign } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 import { useState, useEffect } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface TarifParkir {
     id: number;
@@ -391,41 +392,67 @@ export default function TarifParkirIndex({ tarifParkir, filters, flash, jenisKen
                 </div>
 
                 {/* Pagination */}
-                <div className='flex items-center justify-between px-2'>
+                <div className='flex flex-col items-center justify-center gap-4 px-2 py-4'>
                     <div className='text-sm text-muted-foreground'>
                         Menampilkan {tarifParkir.from || 0} sampai {tarifParkir.to || 0} dari {tarifParkir.total} hasil
                     </div>
-                    <div className='flex items-center space-x-2'>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(tarifParkir.current_page - 1)}
-                            disabled={tarifParkir.current_page === 1}
-                        >
-                            <ChevronLeft className='h-4 w-4' />
-                        </Button>
-                        <div className='flex items-center space-x-1'>
-                            {Array.from({ length: tarifParkir.last_page }, (_, i) => i + 1).map((page) => (
-                                <Button
-                                    key={page}
-                                    variant={page === tarifParkir.current_page ? 'default' : 'outline'}
-                                    size='sm'
-                                    onClick={() => handlePageChange(page)}
-                                    className="w-10 h-10"
-                                >
-                                    {page}
-                                </Button>
-                            ))}
-                        </div>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(tarifParkir.current_page + 1)}
-                            disabled={tarifParkir.current_page === tarifParkir.last_page}
-                        >
-                            <ChevronRight className='w-4 h-4' />
-                        </Button>
-                    </div>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(tarifParkir.current_page - 1);
+                                    }}
+                                    className={tarifParkir.current_page === 1 ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+
+                            {(() => {
+                                const pages = [];
+                                const startPage = Math.max(1, tarifParkir.current_page - 1);
+                                const endPage = Math.min(tarifParkir.last_page, tarifParkir.current_page + 1);
+                                let lastRenderedPage = 0;
+
+                                for (let page = startPage; page <= endPage; page++) {
+                                    if (page > lastRenderedPage + 1) {
+                                        pages.push(<PaginationItem key={`ellipsis-${lastRenderedPage}`}>
+                                            <PaginationEllipsis />
+                                        </PaginationItem>);
+                                    }
+                                    pages.push(
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                href="#"
+                                                isActive={page === tarifParkir.current_page}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(page);
+                                                }}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                    lastRenderedPage = page;
+                                }
+
+                                return pages;
+                            })()}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(tarifParkir.current_page + 1);
+                                    }}
+                                    className={tarifParkir.current_page === tarifParkir.last_page ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </div>
 
                 {/* Edit Modal */}

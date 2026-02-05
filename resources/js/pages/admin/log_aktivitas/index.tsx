@@ -1,11 +1,12 @@
 import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { Search, ChevronLeft, ChevronRight, Activity, User, Calendar } from 'lucide-react';
+import { Search, Activity, User, Calendar } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface LogAktivitas {
     id: number;
@@ -190,41 +191,67 @@ export default function LogAktivitasIndex({ logs, filters }: Props) {
                 </div>
 
                 {/* Pagination */}
-                <div className='flex items-center justify-between px-2'>
+                <div className='flex flex-col items-center justify-center gap-4 px-2 py-4'>
                     <div className='text-sm text-muted-foreground'>
                         Menampilkan {logs.from || 0} sampai {logs.to || 0} dari {logs.total} hasil
                     </div>
-                    <div className='flex items-center space-x-2'>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(logs.current_page - 1)}
-                            disabled={logs.current_page === 1}
-                        >
-                            <ChevronLeft className='h-4 w-4' />
-                        </Button>
-                        <div className='flex items-center space-x-1'>
-                            {Array.from({ length: logs.last_page }, (_, i) => i + 1).map((page) => (
-                                <Button
-                                    key={page}
-                                    variant={page === logs.current_page ? 'default' : 'outline'}
-                                    size='sm'
-                                    onClick={() => handlePageChange(page)}
-                                    className="w-10 h-10"
-                                >
-                                    {page}
-                                </Button>
-                            ))}
-                        </div>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(logs.current_page + 1)}
-                            disabled={logs.current_page === logs.last_page}
-                        >
-                            <ChevronRight className='w-4 h-4' />
-                        </Button>
-                    </div>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(logs.current_page - 1);
+                                    }}
+                                    className={logs.current_page === 1 ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+
+                            {(() => {
+                                const pages = [];
+                                const startPage = Math.max(1, logs.current_page - 1);
+                                const endPage = Math.min(logs.last_page, logs.current_page + 1);
+                                let lastRenderedPage = 0;
+
+                                for (let page = startPage; page <= endPage; page++) {
+                                    if (page > lastRenderedPage + 1) {
+                                        pages.push(<PaginationItem key={`ellipsis-${lastRenderedPage}`}>
+                                            <PaginationEllipsis />
+                                        </PaginationItem>);
+                                    }
+                                    pages.push(
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                href="#"
+                                                isActive={page === logs.current_page}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(page);
+                                                }}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                    lastRenderedPage = page;
+                                }
+
+                                return pages;
+                            })()}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(logs.current_page + 1);
+                                    }}
+                                    className={logs.current_page === logs.last_page ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </div>
             </div>
         </AppLayout>

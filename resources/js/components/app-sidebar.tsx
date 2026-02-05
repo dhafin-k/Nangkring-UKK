@@ -25,7 +25,8 @@ import {
     Truck,
     Bike,
     Activity,
-    ParkingCircle
+    ParkingCircle,
+    BarChart3
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -72,7 +73,7 @@ export function AppSidebar() {
     } else if (role === 'owner') {
         mainNavItems = [
             { title: 'Dashboard', href: '/owner/dashboard', icon: LayoutGrid },
-            // { title: 'Rekap Transaksi', href: '/owner/rekap-transaksi', icon: BarChart3 },
+            { title: 'Rekap Transaksi', href: '/owner/rekap-transaksi', icon: BarChart3 },
         ];
     } else {
         mainNavItems = [

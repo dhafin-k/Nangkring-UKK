@@ -1,7 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, ChevronLeft, ChevronRight, MapPin, Users, Save } from 'lucide-react';
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, MapPin, Users, Save } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 import { useState, useEffect } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface AreaParkir {
     id: number;
@@ -66,7 +67,7 @@ export default function AreaParkirIndex({ areaParkir, filters, flash }: Props) {
     });
 
     useEffect(() => {
-        if (flash?.success) {   
+        if (flash?.success) {
             setToastMessage(flash.success);
             setToastType('success');
             setShowToast(true);
@@ -355,40 +356,67 @@ export default function AreaParkirIndex({ areaParkir, filters, flash }: Props) {
                 </div>
 
                 {/* Pagination */}
-                <div className='flex items-center justify-between px-2'>
+                <div className='flex flex-col items-center justify-center gap-4 px-2 py-4'>
                     <div className='text-sm text-muted-foreground'>
                         Menampilkan {areaParkir.from || 0} sampai {areaParkir.to || 0} dari {areaParkir.total} hasil
                     </div>
-                    <div className='flex items-center space-x-2'>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(areaParkir.current_page - 1)}
-                            disabled={areaParkir.current_page === 1}
-                        >
-                            <ChevronLeft className='h-4 w-4' />
-                        </Button>
-                        <div className='flex items-center space-x-1'>
-                            {Array.from({ length: areaParkir.last_page }, (_, i) => i + 1).map((page) => (
-                                <Button
-                                    key={page}
-                                    variant={page === areaParkir.current_page ? 'default' : 'outline'}
-                                    size='icon'
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </Button>
-                            ))}
-                        </div>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(areaParkir.current_page + 1)}
-                            disabled={areaParkir.current_page === areaParkir.last_page}
-                        >
-                            <ChevronRight className='w-4 h-4' />
-                        </Button>
-                    </div>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(areaParkir.current_page - 1);
+                                    }}
+                                    className={areaParkir.current_page === 1 ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+
+                            {(() => {
+                                const pages = [];
+                                const startPage = Math.max(1, areaParkir.current_page - 1);
+                                const endPage = Math.min(areaParkir.last_page, areaParkir.current_page + 1);
+                                let lastRenderedPage = 0;
+
+                                for (let page = startPage; page <= endPage; page++) {
+                                    if (page > lastRenderedPage + 1) {
+                                        pages.push(<PaginationItem key={`ellipsis-${lastRenderedPage}`}>
+                                            <PaginationEllipsis />
+                                        </PaginationItem>);
+                                    }
+                                    pages.push(
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                href="#"
+                                                isActive={page === areaParkir.current_page}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(page);
+                                                }}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                    lastRenderedPage = page;
+                                }
+
+                                return pages;
+                            })()}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(areaParkir.current_page + 1);
+                                    }}
+                                    className={areaParkir.current_page === areaParkir.last_page ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </div>
 
                 {/* Edit Modal */}

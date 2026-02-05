@@ -2,12 +2,13 @@ import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle, User, Mail, Search, ChevronLeft, ChevronRight, Crown, Zap, Shield } from 'lucide-react';
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle, User, Mail, Search, Crown, Zap, Shield } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 import { useState, useEffect } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Badge } from '@/components/ui/badge';
 import { index } from '@/routes/admin/users';
 
@@ -291,40 +292,67 @@ export default function UsersIndex({ users, filters, flash, roles }: Props) {
                 </div>
 
                 {/* Pagination */}
-                <div className='flex items-center justify-between px-2'>
+                <div className='flex flex-col items-center justify-center gap-4 px-2 py-4'>
                     <div className='text-sm text-muted-foreground'>
                         Menampilkan {users.from} sampai {users.to} dari {users.total} hasil
                     </div>
-                    <div className='flex items-center space-x-2'>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(users.current_page - 1)}
-                            disabled={users.current_page === 1}
-                        >
-                            <ChevronLeft className='h-4 w-4' />
-                        </Button>
-                        <div className='flex items-center space-x-1'>
-                            {Array.from({ length: users.last_page }, (_, i) => i + 1).map((page) => (
-                                <Button
-                                    key={page}
-                                    variant={page === users.current_page ? 'default' : 'outline'}
-                                    size='icon'
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </Button>
-                            ))}
-                        </div>
-                        <Button
-                            variant='outline'
-                            size='icon'
-                            onClick={() => handlePageChange(users.current_page + 1)}
-                            disabled={users.current_page === users.last_page}
-                        >
-                            <ChevronRight className='w-4 h-4' />
-                        </Button>
-                    </div>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(users.current_page - 1);
+                                    }}
+                                    className={users.current_page === 1 ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+
+                            {(() => {
+                                const pages = [];
+                                const startPage = Math.max(1, users.current_page - 1);
+                                const endPage = Math.min(users.last_page, users.current_page + 1);
+                                let lastRenderedPage = 0;
+
+                                for (let page = startPage; page <= endPage; page++) {
+                                    if (page > lastRenderedPage + 1) {
+                                        pages.push(<PaginationItem key={`ellipsis-${lastRenderedPage}`}>
+                                            <PaginationEllipsis />
+                                        </PaginationItem>);
+                                    }
+                                    pages.push(
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                href="#"
+                                                isActive={page === users.current_page}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(page);
+                                                }}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                    lastRenderedPage = page;
+                                }
+
+                                return pages;
+                            })()}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(users.current_page + 1);
+                                    }}
+                                    className={users.current_page === users.last_page ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </div>
 
                 {/* Alert Dialog Delete */}

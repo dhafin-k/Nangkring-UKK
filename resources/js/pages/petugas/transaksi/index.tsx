@@ -2,13 +2,14 @@
 import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, ChevronLeft, ChevronRight, Car, Clock, DollarSign, MapPin, LogIn, LogOut, Filter, Printer } from 'lucide-react';
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, Car, Clock, DollarSign, MapPin, LogIn, LogOut, Filter, Printer } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 import { useState, useEffect } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface Transaksi {
     id: number;
@@ -468,41 +469,67 @@ export default function TransaksiIndex({ transaksi, filters, flash }: Props) {
 
                 {/* Pagination */}
                 {transaksi.data.length > 0 && (
-                    <div className='flex items-center justify-between px-2'>
+                    <div className='flex flex-col items-center justify-center gap-4 px-2 py-4'>
                         <div className='text-sm text-muted-foreground'>
                             Menampilkan {transaksi.from || 0} sampai {transaksi.to || 0} dari {transaksi.total} hasil
                         </div>
-                        <div className='flex items-center space-x-2'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => handlePageChange(transaksi.current_page - 1)}
-                                disabled={transaksi.current_page === 1}
-                            >
-                                <ChevronLeft className='h-4 w-4' />
-                            </Button>
-                            <div className='flex items-center space-x-1'>
-                                {Array.from({ length: transaksi.last_page }, (_, i) => i + 1).map((page) => (
-                                    <Button
-                                        key={page}
-                                        variant={page === transaksi.current_page ? 'default' : 'outline'}
-                                        size='sm'
-                                        onClick={() => handlePageChange(page)}
-                                        className="w-10 h-10"
-                                    >
-                                        {page}
-                                    </Button>
-                                ))}
-                            </div>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => handlePageChange(transaksi.current_page + 1)}
-                                disabled={transaksi.current_page === transaksi.last_page}
-                            >
-                                <ChevronRight className='w-4 h-4' />
-                            </Button>
-                        </div>
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handlePageChange(transaksi.current_page - 1);
+                                        }}
+                                        className={transaksi.current_page === 1 ? 'pointer-events-none opacity-50' : ''}
+                                    />
+                                </PaginationItem>
+
+                                {(() => {
+                                    const pages = [];
+                                    const startPage = Math.max(1, transaksi.current_page - 1);
+                                    const endPage = Math.min(transaksi.last_page, transaksi.current_page + 1);
+                                    let lastRenderedPage = 0;
+
+                                    for (let page = startPage; page <= endPage; page++) {
+                                        if (page > lastRenderedPage + 1) {
+                                            pages.push(<PaginationItem key={`ellipsis-${lastRenderedPage}`}>
+                                                <PaginationEllipsis />
+                                            </PaginationItem>);
+                                        }
+                                        pages.push(
+                                            <PaginationItem key={page}>
+                                                <PaginationLink
+                                                    href="#"
+                                                    isActive={page === transaksi.current_page}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handlePageChange(page);
+                                                    }}
+                                                >
+                                                    {page}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                        lastRenderedPage = page;
+                                    }
+
+                                    return pages;
+                                })()}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handlePageChange(transaksi.current_page + 1);
+                                        }}
+                                        className={transaksi.current_page === transaksi.last_page ? 'pointer-events-none opacity-50' : ''}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
                     </div>
                 )}
 
